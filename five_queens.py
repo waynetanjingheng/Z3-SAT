@@ -47,4 +47,16 @@ for i in range(4):
     s.add(at_most_one(diag_3))
     s.add(at_most_one(diag_4))
 
-print(s.check())
+print(s.check())  # Verify result
+
+m = s.model()
+
+# Print the result
+for i in range(5):
+    line = ""
+    for j in range(5):
+        if m.evaluate(board[i][j]):
+            line += "x "
+        else:
+            line += ". "
+    print(line)
