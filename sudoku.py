@@ -1,6 +1,7 @@
 from z3 import *
 from itertools import combinations
 from typing import List
+import argparse
 
 
 def exactly_one(literals: List[bool]) -> bool:
@@ -71,7 +72,9 @@ def sudoku_solver(grid: List[List[bool]]) -> str:
         for j in range(3):
             for k in range(9):
                 grid_cells = [
-                    literals[3 * i + x][3 * j + y] for y in range(3) for x in range(3)
+                    literals[3 * i + x][3 * j + y][k]
+                    for y in range(3)
+                    for x in range(3)
                 ]
                 s.add(exactly_one(grid_cells))
 
@@ -80,9 +83,31 @@ def sudoku_solver(grid: List[List[bool]]) -> str:
     for i in range(9):
         for j in range(9):
             if grid[i][j]:
-                s.add(literals[i][j][grid[i][j]])
+                s.add(literals[i][j][grid[i][j] - 1])
 
-    if s.check() == "sat":
+    if s.check() == sat:
         print_solution(s.model(), literals)
     else:
         print("unsat")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "-f",
+        "--file",
+        help="File that contains a 2D grid representing the sudoku board.",
+    )
+
+    args = parser.parse_args()
+
+    filename = args.file
+
+    grid = []
+    with open(filename, "r") as f:
+        for line in f.readlines():
+            grid.append([int(x) for x in line.split(" ") if x != "\n"])
+
+        sudoku_solver(grid=grid)
+        exit(0)
